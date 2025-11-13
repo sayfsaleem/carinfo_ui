@@ -1,7 +1,32 @@
 // Demo vehicle data based on TotalCarCheck API responses
 // This serves as our mock data for development and demonstration
 
+import { mapDVLADataToVehicleFormat } from './dvlaApiMapper';
+
 export const DEMO_VEHICLE_VRM = "WA67YSB";
+
+// DVLA API Mock Response (Free Tier Data Source)
+// This simulates what the DVLA Vehicle Enquiry Service API returns
+export const dvlaApiMockData = {
+  registrationNumber: "WA67YSB",
+  taxStatus: "Taxed",
+  taxDueDate: "2025-09-01",
+  motStatus: "Valid",
+  make: "SKODA",
+  yearOfManufacture: 2017,
+  engineCapacity: 1395,
+  co2Emissions: 117,
+  fuelType: "PETROL",
+  markedForExport: false,
+  colour: "GREY",
+  typeApproval: "M1",
+  revenueWeight: 1861,
+  dateOfLastV5CIssued: "2021-03-15",
+  motExpiryDate: "2025-12-15",
+  wheelplan: "2 AXLE RIGID BODY",
+  monthOfFirstRegistration: "2017-09",
+  euroStatus: "6b"
+};
 
 // GOLD CHECK DATA - Includes ALL features
 export const goldCheckData = {
@@ -536,35 +561,9 @@ export function getVehicleDataByTier(vrm, tier) {
     case PRICING_TIERS.SILVER:
       return silverCheckData;
     case PRICING_TIERS.BASIC:
-      // For basic, return minimal data
-      return {
-        ...silverCheckData,
-        Report: {
-          BasicVehicleInformation: silverCheckData.Report.BasicVehicleInformation,
-          EnvironmentalInformation: {
-            ...silverCheckData.Report.EnvironmentalInformation,
-            FuelEconomyDataModel: null // Limit environmental data
-          },
-          ExtendedVehicleInformation: null, // No extended info in basic
-          ImportantChecks: {
-            Exported: silverCheckData.Report.ImportantChecks.Exported,
-            Imported: silverCheckData.Report.ImportantChecks.Imported,
-            IsStolen: silverCheckData.Report.ImportantChecks.IsStolen,
-            IsWrittenOff: silverCheckData.Report.ImportantChecks.IsWrittenOff,
-            MotAndRoadTaxInformation: {
-              DateMotDue: silverCheckData.Report.ImportantChecks.MotAndRoadTaxInformation.DateMotDue,
-              DateRoadTaxDue: silverCheckData.Report.ImportantChecks.MotAndRoadTaxInformation.DateRoadTaxDue,
-              IsMOTDue: silverCheckData.Report.ImportantChecks.MotAndRoadTaxInformation.IsMOTDue,
-              IsRoadTaxDue: silverCheckData.Report.ImportantChecks.MotAndRoadTaxInformation.IsRoadTaxDue,
-              IsVehicleSORN: silverCheckData.Report.ImportantChecks.MotAndRoadTaxInformation.IsVehicleSORN,
-              MotResultsSummary: null // No MOT history in basic
-            }
-          },
-          PreviousKeepersInformation: null,
-          RoadTaxInformation: silverCheckData.Report.RoadTaxInformation,
-          ValuationInformation: null
-        }
-      };
+      // For basic tier, return data mapped from DVLA API format
+      // This simulates what free users get from the public DVLA API
+      return mapDVLADataToVehicleFormat(dvlaApiMockData);
     default:
       return silverCheckData;
   }

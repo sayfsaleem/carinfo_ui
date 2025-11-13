@@ -6,12 +6,12 @@ import { PRICING_TIERS } from '../lib/demoData';
 /**
  * useCurrentTier Hook
  * Get current user's pricing tier from localStorage
- * Defaults to 'silver' tier for demo purposes
+ * Defaults to 'basic' (FREE) tier
  *
  * @returns {string} Current tier ('basic', 'silver', or 'gold')
  */
 export function useCurrentTier() {
-  const [tier, setTier] = useState(PRICING_TIERS.SILVER);
+  const [tier, setTier] = useState(PRICING_TIERS.BASIC);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -19,16 +19,24 @@ export function useCurrentTier() {
     try {
       const stored = localStorage.getItem('userTier');
 
-      if (stored && Object.values(PRICING_TIERS).includes(stored)) {
+      // TEMPORARY: Force reset to basic tier for testing
+      // Remove this in production or after testing
+      if (!stored || stored === 'silver') {
+        console.log('[useCurrentTier] Resetting tier to BASIC (FREE) for testing DVLA API');
+        setTier(PRICING_TIERS.BASIC);
+        localStorage.setItem('userTier', PRICING_TIERS.BASIC);
+      } else if (stored && Object.values(PRICING_TIERS).includes(stored)) {
+        console.log(`[useCurrentTier] Loaded tier from localStorage: ${stored}`);
         setTier(stored);
       } else {
-        // Default to silver for demo
-        setTier(PRICING_TIERS.SILVER);
-        localStorage.setItem('userTier', PRICING_TIERS.SILVER);
+        // Default to BASIC (FREE) tier
+        console.log('[useCurrentTier] No valid tier found, defaulting to BASIC');
+        setTier(PRICING_TIERS.BASIC);
+        localStorage.setItem('userTier', PRICING_TIERS.BASIC);
       }
     } catch (error) {
       console.error('Error reading tier from localStorage:', error);
-      setTier(PRICING_TIERS.SILVER);
+      setTier(PRICING_TIERS.BASIC);
     } finally {
       setIsLoading(false);
     }

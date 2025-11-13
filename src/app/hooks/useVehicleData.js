@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getVehicleDataByTier } from '../lib/demoData';
+import { getVehicleDataByTier, PRICING_TIERS } from '../lib/demoData';
+import { queryDVLAVehicle, shouldUseDVLAAPI } from '../lib/dvlaApiService';
+import { mapDVLADataToVehicleFormat } from '../lib/dvlaApiMapper';
 
 /**
  * useVehicleData Hook
  * Fetch vehicle data by VRM and tier
- * In production, this would call a real API
- * For demo, returns data from demoData.js
+ * - FREE tier: Calls real DVLA API
+ * - SILVER/GOLD tiers: Returns demo data (would be your paid API in production)
  *
  * @param {string} vrm - Vehicle registration number
  * @param {string} tier - User's pricing tier
@@ -24,23 +26,56 @@ export default function useVehicleData(vrm, tier) {
       return;
     }
 
-    // Simulate API call delay
     const fetchData = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 500));
+        console.log(`[useVehicleData] Current tier: ${tier}, shouldUseDVLAAPI: ${shouldUseDVLAAPI(tier)}`);
 
-        // Get data from demo data
-        const vehicleData = getVehicleDataByTier(vrm, tier);
+        // FREE TIER: Use real DVLA API
+        if (shouldUseDVLAAPI(tier)) {
+          console.log(`[useVehicleData] Fetching from DVLA API for FREE tier: ${vrm}`);
 
-        if (!vehicleData) {
-          throw new Error('Vehicle not found');
+          const response = await queryDVLAVehicle(vrm);
+
+          if (response.success) {
+            // Map DVLA response to our internal format
+            const mappedData = mapDVLADataToVehicleFormat(response.data);
+
+            if (!mappedData) {
+              throw new Error('Failed to parse vehicle data');
+            }
+
+            setData(mappedData);
+          } else {
+            // Handle DVLA API errors
+            if (response.statusCode === 404) {
+              throw new Error(`Vehicle ${vrm} not found in DVLA database`);
+            } else if (response.statusCode === 400) {
+              throw new Error('Invalid vehicle registration number');
+            } else if (response.statusCode === 503) {
+              throw new Error('DVLA service temporarily unavailable. Please try again later.');
+            } else {
+              throw new Error(response.error || 'Failed to fetch vehicle data from DVLA');
+            }
+          }
         }
+        // PAID TIERS: Use demo data (in production, this would be your paid API)
+        else {
+          console.log(`[useVehicleData] Using demo data for ${tier} tier: ${vrm}`);
 
-        setData(vehicleData);
+          // Simulate network delay for consistency
+          await new Promise(resolve => setTimeout(resolve, 500));
+
+          const vehicleData = getVehicleDataByTier(vrm, tier);
+
+          if (!vehicleData) {
+            throw new Error(`Vehicle ${vrm} not found`);
+          }
+
+          setData(vehicleData);
+        }
       } catch (err) {
         console.error('Error fetching vehicle data:', err);
         setError(err.message || 'Failed to fetch vehicle data');
@@ -85,18 +120,42 @@ export function useVehicleCheck(tier) {
     setError(null);
 
     try {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // FREE TIER: Use real DVLA API
+      if (shouldUseDVLAAPI(tier)) {
+        const response = await queryDVLAVehicle(cleanVrm);
 
-      // Get data from demo data
-      const vehicleData = getVehicleDataByTier(cleanVrm, tier);
+        if (response.success) {
+          const mappedData = mapDVLADataToVehicleFormat(response.data);
 
-      if (!vehicleData) {
-        throw new Error(`Vehicle ${cleanVrm} not found in DVLA database`);
+          if (!mappedData) {
+            throw new Error('Failed to parse vehicle data');
+          }
+
+          setData(mappedData);
+          return mappedData;
+        } else {
+          if (response.statusCode === 404) {
+            throw new Error(`Vehicle ${cleanVrm} not found in DVLA database`);
+          } else if (response.statusCode === 400) {
+            throw new Error('Invalid vehicle registration number');
+          } else {
+            throw new Error(response.error || 'Failed to fetch vehicle data');
+          }
+        }
       }
+      // PAID TIERS: Use demo data
+      else {
+        await new Promise(resolve => setTimeout(resolve, 800));
 
-      setData(vehicleData);
-      return vehicleData;
+        const vehicleData = getVehicleDataByTier(cleanVrm, tier);
+
+        if (!vehicleData) {
+          throw new Error(`Vehicle ${cleanVrm} not found`);
+        }
+
+        setData(vehicleData);
+        return vehicleData;
+      }
     } catch (err) {
       console.error('Error checking vehicle:', err);
       setError(err.message || 'Failed to check vehicle');

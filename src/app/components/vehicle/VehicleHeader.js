@@ -21,7 +21,7 @@ export default function VehicleHeader({ vehicle }) {
   if (!basicInfo) return null;
 
   const make = basicInfo.Make || 'Unknown Make';
-  const model = basicInfo.Model || 'Unknown Model';
+  const model = basicInfo.Model || '';
   const vrm = basicInfo.VRM || '';
   const year = basicInfo.ManufacturedDate
     ? new Date(basicInfo.ManufacturedDate).getFullYear()
@@ -72,9 +72,11 @@ export default function VehicleHeader({ vehicle }) {
             <h1 className="text-4xl font-black mb-3 leading-tight">
               {make}
             </h1>
-            <p className="text-xl text-gray-300 mb-4">
-              {model}
-            </p>
+            {model && (
+              <p className="text-xl text-gray-300 mb-4">
+                {model}
+              </p>
+            )}
 
             {/* Badges */}
             <div className="flex flex-wrap items-center gap-2 mb-6">
