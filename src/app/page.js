@@ -102,16 +102,16 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="px-6 md:px-8 lg:px-12 xl:px-20 py-12"
             >
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 leading-tight mb-6">
-                Revolutionary UK Vehicle{' '}
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+                Free UK Vehicle History Check – MOT, Tax & Mileage +{' '}
                 <span className="bg-gradient-to-r from-[#0069d9] to-[#007bff] bg-clip-text text-transparent">
-                  Intelligence
+                  Full HPI Upgrade
                 </span>
               </h1>
 
-              <p className="text-xl text-gray-600 mb-6 leading-relaxed">
-                Unlock comprehensive vehicle intelligence in milliseconds. From MOT and tax status to AI-powered insights, experience the future of vehicle data analysis.
-              </p>
+              <h2 className="text-xl md:text-2xl text-gray-600 mb-6 leading-relaxed font-medium">
+                Get instant DVLA-powered MOT, tax, and mileage data for free. Upgrade for a full HPI-level report — finance, write-offs, theft & more.
+              </h2>
 
               {/* FREE Badge */}
               <div className="inline-flex items-center gap-3 bg-green-50 border-2 border-green-500 text-green-700 px-6 py-3 rounded-full font-bold text-lg mb-6 shadow-lg">

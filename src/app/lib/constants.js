@@ -1,8 +1,8 @@
 // Application constants
 
-export const APP_NAME = "MOT Vehicle Check";
-export const APP_TAGLINE = "Revolutionary UK Vehicle Intelligence";
-export const APP_DESCRIPTION = "Unlock comprehensive vehicle intelligence in milliseconds. From MOT and tax status to AI-powered insights, experience the future of vehicle data analysis.";
+export const APP_NAME = "CarInfo UK";
+export const APP_TAGLINE = "Free UK Vehicle History Check – MOT, Tax & Mileage + Full HPI Upgrade";
+export const APP_DESCRIPTION = "Get instant DVLA-powered MOT, tax, and mileage data for free. Upgrade for a full HPI-level report — finance, write-offs, theft & more. Trusted UK vehicle history check service.";
 
 // Navigation links
 export const NAV_LINKS = [
@@ -308,10 +308,30 @@ export const BREAKPOINTS = {
 // Meta information for SEO
 export const DEFAULT_META = {
   siteName: APP_NAME,
-  siteUrl: "https://motvehiclecheck.co.uk", // Update with actual domain
-  twitterHandle: "@motvehiclecheck",
+  siteUrl: "https://carinfo.co.uk", // Update with actual domain
+  twitterHandle: "@carinfo_uk",
   defaultImage: "/og-image.png",
-  defaultDescription: APP_DESCRIPTION
+  defaultDescription: APP_DESCRIPTION,
+  keywords: [
+    'free car check UK',
+    'free MOT check',
+    'free tax check car',
+    'UK number plate check free',
+    'car history check UK',
+    'HPI check UK',
+    'full car history report',
+    'vehicle history report',
+    'check a used car before buying',
+    'used car checker UK',
+    'outstanding finance check',
+    'write off check car',
+    'stolen car check',
+    'mileage check clocking',
+    'DVLA car check',
+    'DVLA vehicle data',
+    'DVLA MOT history',
+    'vehicle history report upgrade'
+  ]
 };
 
 // Pricing tiers and features
