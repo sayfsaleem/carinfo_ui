@@ -39,102 +39,96 @@ export default function DashboardPage() {
 
   // Load data from localStorage on mount
   useEffect(() => {
+    const loadDashboardData = () => {
+      // Load recent checks
+      const checksData = localStorage.getItem('recentChecks');
+      if (checksData) {
+        const checks = JSON.parse(checksData);
+        setRecentChecks(checks.slice(0, 5)); // Show last 5
+      } else {
+        // Demo data if none exists
+        setRecentChecks([
+          {
+            vrm: 'WA67YSB',
+            make: 'BMW',
+            model: '3 Series',
+            color: 'Blue',
+            checkDate: new Date().toISOString(),
+            motStatus: 'valid',
+            taxStatus: 'taxed'
+          },
+          {
+            vrm: 'AB12CDE',
+            make: 'Ford',
+            model: 'Focus',
+            color: 'Red',
+            checkDate: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+            motStatus: 'valid',
+            taxStatus: 'taxed'
+          },
+          {
+            vrm: 'XY98ZAB',
+            make: 'Volkswagen',
+            model: 'Golf',
+            color: 'Silver',
+            checkDate: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+            motStatus: 'expired',
+            taxStatus: 'untaxed'
+          }
+        ]);
+      }
+
+      // Load saved vehicles
+      const savedData = localStorage.getItem('savedVehicles');
+      if (savedData) {
+        const vehicles = JSON.parse(savedData);
+        setSavedVehicles(vehicles);
+      } else {
+        // Demo data if none exists
+        setSavedVehicles([
+          {
+            vrm: 'WA67YSB',
+            make: 'BMW',
+            model: '3 Series',
+            color: 'Blue',
+            year: '2017',
+            savedDate: new Date(Date.now() - 604800000).toISOString(), // 1 week ago
+            motExpiry: '2025-09-15',
+            favorite: true
+          },
+          {
+            vrm: 'FG67HJK',
+            make: 'Mercedes-Benz',
+            model: 'C-Class',
+            color: 'Black',
+            year: '2018',
+            savedDate: new Date(Date.now() - 1209600000).toISOString(), // 2 weeks ago
+            motExpiry: '2025-06-20',
+            favorite: false
+          },
+          {
+            vrm: 'LM34NOP',
+            make: 'Audi',
+            model: 'A4',
+            color: 'White',
+            year: '2019',
+            savedDate: new Date(Date.now() - 2592000000).toISOString(), // 1 month ago
+            motExpiry: '2024-12-10',
+            favorite: false
+          }
+        ]);
+      }
+
+      // Set initial stats
+      setStatsData({
+        checksThisMonth: 15, // Demo value
+        savedVehicles: 3,
+        currentTier: currentTier
+      });
+    };
+
     loadDashboardData();
-  }, []);
-
-  const loadDashboardData = () => {
-    // Load recent checks
-    const checksData = localStorage.getItem('recentChecks');
-    if (checksData) {
-      const checks = JSON.parse(checksData);
-      setRecentChecks(checks.slice(0, 5)); // Show last 5
-    } else {
-      // Demo data if none exists
-      setRecentChecks([
-        {
-          vrm: 'WA67YSB',
-          make: 'BMW',
-          model: '3 Series',
-          color: 'Blue',
-          checkDate: new Date().toISOString(),
-          motStatus: 'valid',
-          taxStatus: 'taxed'
-        },
-        {
-          vrm: 'AB12CDE',
-          make: 'Ford',
-          model: 'Focus',
-          color: 'Red',
-          checkDate: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-          motStatus: 'valid',
-          taxStatus: 'taxed'
-        },
-        {
-          vrm: 'XY98ZAB',
-          make: 'Volkswagen',
-          model: 'Golf',
-          color: 'Silver',
-          checkDate: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-          motStatus: 'expired',
-          taxStatus: 'untaxed'
-        }
-      ]);
-    }
-
-    // Load saved vehicles
-    const savedData = localStorage.getItem('savedVehicles');
-    if (savedData) {
-      const vehicles = JSON.parse(savedData);
-      setSavedVehicles(vehicles);
-    } else {
-      // Demo data if none exists
-      setSavedVehicles([
-        {
-          vrm: 'WA67YSB',
-          make: 'BMW',
-          model: '3 Series',
-          color: 'Blue',
-          year: '2017',
-          savedDate: new Date(Date.now() - 604800000).toISOString(), // 1 week ago
-          motExpiry: '2025-09-15',
-          favorite: true
-        },
-        {
-          vrm: 'FG67HJK',
-          make: 'Mercedes-Benz',
-          model: 'C-Class',
-          color: 'Black',
-          year: '2018',
-          savedDate: new Date(Date.now() - 1209600000).toISOString(), // 2 weeks ago
-          motExpiry: '2025-06-20',
-          favorite: false
-        },
-        {
-          vrm: 'LM34NOP',
-          make: 'Audi',
-          model: 'A4',
-          color: 'White',
-          year: '2019',
-          savedDate: new Date(Date.now() - 2592000000).toISOString(), // 1 month ago
-          motExpiry: '2024-12-10',
-          favorite: false
-        }
-      ]);
-    }
-
-    // Calculate stats
-    const currentMonth = new Date().getMonth();
-    const checksThisMonth = recentChecks.filter(check => {
-      const checkMonth = new Date(check.checkDate).getMonth();
-      return checkMonth === currentMonth;
-    }).length || 15; // Demo value
-
-    setStatsData({
-      checksThisMonth,
-      savedVehicles: savedVehicles.length || 3,
-      currentTier: currentTier
-    });
-  };
+  }, [currentTier]);
 
   const handleQuickSearch = (e) => {
     e.preventDefault();

@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { FaClock, FaTag, FaArrowRight } from 'react-icons/fa6';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -115,10 +116,12 @@ export default function BlogPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
                 {/* Image */}
                 <div className="relative h-64 lg:h-auto overflow-hidden">
-                  <img
+                  <Image
                     src={featuredPost.image}
                     alt={featuredPost.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
                   />
                   <div className="absolute top-4 left-4">
                     <Badge variant="primary" size="lg">
@@ -218,10 +221,12 @@ export default function BlogPage() {
                 <Card hover className="h-full flex flex-col cursor-pointer group">
                   {/* Image */}
                   <div className="relative h-48 overflow-hidden rounded-2xl mb-4">
-                    <img
+                    <Image
                       src={post.image}
                       alt={post.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                     <div className="absolute bottom-3 left-3">

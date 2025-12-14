@@ -24,6 +24,8 @@ export default function StatCard({ icon: IconComponent, number, label, animate =
       return;
     }
 
+    const currentRef = ref.current;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !isVisible) {
@@ -33,13 +35,13 @@ export default function StatCard({ icon: IconComponent, number, label, animate =
       { threshold: 0.5 }
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
   }, [animate, isVisible]);

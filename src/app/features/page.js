@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   FaCircleCheck,
   FaCar,
@@ -253,11 +254,13 @@ export default function FeaturesPage() {
 
                 {/* Image */}
                 <div className={showcase.imagePosition === 'left' ? 'lg:order-1' : ''}>
-                  <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-                    <img
+                  <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-video">
+                    <Image
                       src={showcase.image}
                       alt={showcase.title}
-                      className="w-full h-auto object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                   </div>
