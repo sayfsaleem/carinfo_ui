@@ -178,33 +178,6 @@ export default function VehicleCheckPage({ params }) {
     <div className="bg-gradient-to-b from-gray-50 via-white to-gray-50 pb-32">
       <div className="py-8 md:py-12">
         <div className="container-custom">
-          {/* Free Tier Data Source Badge */}
-          {isBasicTier && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between"
-            >
-              <div className="flex items-center gap-3">
-                <div className="bg-blue-500 text-white rounded-full p-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">FREE Check - Basic Data from DVLA</p>
-                  <p className="text-xs text-gray-600">Upgrade for complete MOT history, detailed specs, and valuation data</p>
-                </div>
-              </div>
-              <button
-                onClick={handleUpgrade}
-                className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap"
-              >
-                Upgrade Now
-              </button>
-            </motion.div>
-          )}
-
           {/* Vehicle Header */}
           <div className="mb-8 md:mb-12">
             <VehicleHeader vehicle={data} />
@@ -241,7 +214,35 @@ export default function VehicleCheckPage({ params }) {
             />
           </div>
 
-          {/* FREE Tier Info Card */}
+          {/* SECTION 1: Vehicle Overview - Clean DVLA Data Display */}
+          <section className="mb-8 md:mb-16">
+            <SectionHeader
+              id="overview"
+              icon={<FaCar />}
+              title="Vehicle Overview"
+              description="Official DVLA Vehicle Enquiry Service Data"
+            />
+
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
+              <FreeTierDataDisplay data={data} />
+            </div>
+          </section>
+
+          {/* SECTION 2: Technical Specifications */}
+          <section className="mb-8 md:mb-16">
+            <SectionHeader
+              id="specifications"
+              icon={<FaGear />}
+              title="Technical Specifications"
+              description="Complete vehicle specifications and features"
+            />
+
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
+              <VehicleSpecs data={data} />
+            </div>
+          </section>
+
+          {/* FREE Tier Info Card - After Vehicle Overview */}
           {isBasicTier && (
             <FreeTierDataInfo onUpgrade={handleUpgrade} />
           )}
@@ -256,73 +257,6 @@ export default function VehicleCheckPage({ params }) {
               />
             </div>
           )}
-
-          {/* SECTION 1: Vehicle Overview */}
-          <section className="mb-8 md:mb-16">
-            <SectionHeader
-              id="overview"
-              icon={<FaCar />}
-              title="Vehicle Overview"
-              description={isBasicTier ? "All available data from DVLA Vehicle Enquiry Service" : "Essential information about this vehicle"}
-            />
-
-            {isBasicTier ? (
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
-                <FreeTierDataDisplay data={data} />
-              </div>
-            ) : (
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 md:p-6 border border-blue-200 hover:shadow-md transition-shadow">
-                    <FaCar className="text-3xl md:text-4xl text-blue-600 mb-3" />
-                    <p className="text-xs md:text-sm text-gray-600 mb-1 font-medium">Vehicle Type</p>
-                    <p className="text-lg md:text-xl font-bold text-gray-900">{basicInfo.Body}</p>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-5 md:p-6 border border-green-200 hover:shadow-md transition-shadow">
-                    <FaGear className="text-3xl md:text-4xl text-green-600 mb-3" />
-                    <p className="text-xs md:text-sm text-gray-600 mb-1 font-medium">Engine</p>
-                    <p className="text-lg md:text-xl font-bold text-gray-900">{basicInfo.Cc}</p>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-5 md:p-6 border border-purple-200 hover:shadow-md transition-shadow">
-                    <FaGauge className="text-3xl md:text-4xl text-purple-600 mb-3" />
-                    <p className="text-xs md:text-sm text-gray-600 mb-1 font-medium">Current Mileage</p>
-                    <p className="text-lg md:text-xl font-bold text-gray-900">
-                      {currentMileage ? formatMileage(currentMileage) : 'N/A'}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="border-t border-gray-200 pt-6 md:pt-8">
-                  <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
-                    <span className="w-1 h-6 bg-blue-600 rounded-full"></span>
-                    Quick Summary
-                  </h3>
-                  <p className="text-sm md:text-base text-gray-700 leading-relaxed">
-                    This {basicInfo.Make}{basicInfo.Model ? ` ${basicInfo.Model}` : ''} was manufactured in{' '}
-                    {new Date(basicInfo.ManufacturedDate).getFullYear()} and is currently{' '}
-                    {basicInfo.VehicleAge} old. The vehicle is a {basicInfo.Colour}{' '}
-                    {basicInfo.Body} with a {basicInfo.Fuel} engine ({basicInfo.Cc}).
-                  </p>
-                </div>
-              </div>
-            )}
-          </section>
-
-          {/* SECTION 2: Specifications */}
-          <section className="mb-8 md:mb-16">
-            <SectionHeader
-              id="specifications"
-              icon={<FaGear />}
-              title="Detailed Specifications"
-              description="Complete technical specifications and features"
-            />
-
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8">
-              <VehicleSpecs data={data} />
-            </div>
-          </section>
 
           {/* SECTION 3: MOT History (Silver+) */}
           <section className="mb-8 md:mb-16">

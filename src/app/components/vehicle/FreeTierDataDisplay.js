@@ -7,16 +7,18 @@ import {
   FaGasPump,
   FaGear,
   FaCalendar,
-  FaClock,
+  FaClipboardCheck,
+  FaFileInvoiceDollar,
+  FaLeaf,
   FaRoad,
-  FaFileCircleCheck,
-  FaShield,
-  FaArrowRightArrowLeft
+  FaCircleCheck,
+  FaCircleXmark,
+  FaTriangleExclamation
 } from 'react-icons/fa6';
 
 /**
- * FreeTierDataDisplay Component
- * Enhanced display for ALL available FREE tier data from DVLA API
+ * FreeTierDataDisplay Component - REMASTERED
+ * Clean, professional display of FREE tier DVLA data
  */
 export default function FreeTierDataDisplay({ data }) {
   const basicInfo = data?.Report?.BasicVehicleInformation;
@@ -26,148 +28,166 @@ export default function FreeTierDataDisplay({ data }) {
 
   if (!basicInfo) return null;
 
-  const dataGroups = [
-    {
-      title: 'Vehicle Identity',
-      icon: FaCar,
-      color: 'blue',
-      items: [
-        { label: 'Registration', value: basicInfo.VRM },
-        { label: 'Make', value: basicInfo.Make },
-        { label: 'Body Type', value: basicInfo.Body },
-        { label: 'Vehicle Type', value: basicInfo.VehicleType },
-        { label: 'Colour', value: basicInfo.Colour },
-      ]
-    },
-    {
-      title: 'Age & Registration',
-      icon: FaCalendar,
-      color: 'green',
-      items: [
-        { label: 'Year of Manufacture', value: basicInfo.YearOfManufacture },
-        { label: 'Vehicle Age', value: basicInfo.VehicleAge },
-        { label: 'First Registration', value: basicInfo.RegistrationPlateDate },
-        { label: 'V5C Last Issued', value: basicInfo.UserEnteredV5CDate || 'Not Available' },
-      ]
-    },
-    {
-      title: 'Engine & Fuel',
-      icon: FaGear,
-      color: 'purple',
-      items: [
-        { label: 'Engine Capacity', value: basicInfo.Cc },
-        { label: 'Fuel Type', value: basicInfo.Fuel },
-        { label: 'Wheel Plan', value: basicInfo.WheelPlan },
-      ]
-    },
-    {
-      title: 'MOT Information',
-      icon: FaShield,
-      color: motInfo?.IsMOTDue ? 'red' : 'green',
-      items: [
-        {
-          label: 'MOT Status',
-          value: motInfo?.IsMOTDue ? '⚠️ MOT Due' : '✓ Valid',
-          highlight: motInfo?.IsMOTDue
-        },
-        { label: 'MOT Expiry Date', value: motInfo?.DateMotDue || 'Not Available' },
-      ]
-    },
-    {
-      title: 'Tax Information',
-      icon: FaFileCircleCheck,
-      color: motInfo?.IsRoadTaxDue ? 'red' : 'green',
-      items: [
-        {
-          label: 'Tax Status',
-          value: taxInfo?.TaxStatus || 'Not Available',
-          highlight: motInfo?.IsRoadTaxDue
-        },
-        { label: 'Tax Due Date', value: motInfo?.DateRoadTaxDue || 'Not Available' },
-        {
-          label: 'SORN',
-          value: motInfo?.IsVehicleSORN ? 'Yes' : 'No'
-        },
-      ]
-    },
-    {
-      title: 'Additional Information',
-      icon: FaArrowRightArrowLeft,
-      color: 'gray',
-      items: [
-        {
-          label: 'Marked for Export',
-          value: importantChecks?.Exported ? 'Yes' : 'No'
-        },
-        {
-          label: 'CO2 Emissions',
-          value: taxInfo?.Co2Emissions && taxInfo.Co2Emissions !== '0'
-            ? `${taxInfo.Co2Emissions} g/km`
-            : 'Not Available'
-        },
-      ]
-    }
+  // Key specs for the top row
+  const keySpecs = [
+    { label: 'Make', value: basicInfo.Make, icon: FaCar },
+    { label: 'Colour', value: basicInfo.Colour, icon: FaPalette },
+    { label: 'Fuel', value: basicInfo.Fuel, icon: FaGasPump },
+    { label: 'Engine', value: basicInfo.Cc, icon: FaGear },
+    { label: 'Year', value: basicInfo.YearOfManufacture, icon: FaCalendar },
+    { label: 'Body', value: basicInfo.Body, icon: FaCar },
   ];
 
-  const colorMap = {
-    blue: 'from-blue-50 to-blue-100 border-blue-200',
-    green: 'from-green-50 to-green-100 border-green-200',
-    purple: 'from-purple-50 to-purple-100 border-purple-200',
-    red: 'from-red-50 to-red-100 border-red-200',
-    gray: 'from-gray-50 to-gray-100 border-gray-200'
-  };
+  // All vehicle details in a clean table format
+  const vehicleDetails = [
+    { label: 'Registration (VRM)', value: basicInfo.VRM },
+    { label: 'Make', value: basicInfo.Make },
+    { label: 'Body Type', value: basicInfo.Body },
+    { label: 'Vehicle Type', value: basicInfo.VehicleType },
+    { label: 'Colour', value: basicInfo.Colour },
+    { label: 'Year of Manufacture', value: basicInfo.YearOfManufacture },
+    { label: 'Vehicle Age', value: basicInfo.VehicleAge },
+    { label: 'Date of First Registration', value: basicInfo.RegistrationPlateDate },
+    { label: 'Engine Capacity', value: basicInfo.Cc },
+    { label: 'Fuel Type', value: basicInfo.Fuel },
+    { label: 'Wheel Plan', value: basicInfo.WheelPlan },
+    { label: 'CO2 Emissions', value: taxInfo?.Co2Emissions && taxInfo.Co2Emissions !== '0' ? `${taxInfo.Co2Emissions} g/km` : null },
+    { label: 'Marked for Export', value: importantChecks?.Exported ? 'Yes' : 'No' },
+  ].filter(item => item.value);
 
-  const iconColorMap = {
-    blue: 'text-blue-600',
-    green: 'text-green-600',
-    purple: 'text-purple-600',
-    red: 'text-red-600',
-    gray: 'text-gray-600'
-  };
+  const isMotValid = !motInfo?.IsMOTDue;
+  const isTaxValid = !motInfo?.IsRoadTaxDue && !motInfo?.IsVehicleSORN;
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {dataGroups.map((group, index) => {
-          const Icon = group.icon;
-
+    <div className="space-y-8">
+      {/* Key Specs - Visual Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {keySpecs.map((spec, index) => {
+          const Icon = spec.icon;
           return (
             <motion.div
-              key={group.title}
-              initial={{ opacity: 0, y: 20 }}
+              key={spec.label}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-              className={`bg-gradient-to-br ${colorMap[group.color]} border-2 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow`}
+              transition={{ duration: 0.2, delay: index * 0.05 }}
+              className="bg-gray-50 hover:bg-gray-100 rounded-xl p-4 text-center transition-colors border border-gray-100"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className={`${iconColorMap[group.color]} text-2xl`}>
-                  <Icon />
-                </div>
-                <h3 className="font-bold text-gray-900 text-lg">
-                  {group.title}
-                </h3>
-              </div>
-
-              <div className="space-y-2.5">
-                {group.items.map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-start">
-                    <span className="text-sm text-gray-600 font-medium">
-                      {item.label}:
-                    </span>
-                    <span className={`text-sm font-semibold text-right ml-2 ${
-                      item.highlight
-                        ? 'text-red-700'
-                        : 'text-gray-900'
-                    }`}>
-                      {item.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <Icon className="text-blue-600 text-xl mx-auto mb-2" />
+              <p className="text-xs text-gray-500 mb-1">{spec.label}</p>
+              <p className="text-sm font-bold text-gray-900 truncate">{spec.value || 'N/A'}</p>
             </motion.div>
           );
         })}
       </div>
+
+      {/* MOT & Tax Status Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* MOT Status */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+          className={`rounded-xl p-5 border-2 ${
+            isMotValid
+              ? 'bg-green-50 border-green-200'
+              : 'bg-red-50 border-red-200'
+          }`}
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className={`p-2 rounded-lg ${isMotValid ? 'bg-green-500' : 'bg-red-500'}`}>
+              <FaClipboardCheck className="text-white text-lg" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">MOT Status</p>
+              <div className="flex items-center gap-2">
+                {isMotValid ? (
+                  <FaCircleCheck className="text-green-600" />
+                ) : (
+                  <FaCircleXmark className="text-red-600" />
+                )}
+                <span className={`font-bold ${isMotValid ? 'text-green-700' : 'text-red-700'}`}>
+                  {isMotValid ? 'Valid' : 'Expired / Due'}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="text-sm text-gray-600">
+            <span className="font-medium">Expiry Date:</span>{' '}
+            <span className="font-semibold text-gray-900">{motInfo?.DateMotDue || 'Not Available'}</span>
+          </div>
+        </motion.div>
+
+        {/* Tax Status */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+          className={`rounded-xl p-5 border-2 ${
+            isTaxValid
+              ? 'bg-green-50 border-green-200'
+              : motInfo?.IsVehicleSORN
+                ? 'bg-yellow-50 border-yellow-200'
+                : 'bg-red-50 border-red-200'
+          }`}
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <div className={`p-2 rounded-lg ${
+              isTaxValid ? 'bg-green-500' : motInfo?.IsVehicleSORN ? 'bg-yellow-500' : 'bg-red-500'
+            }`}>
+              <FaFileInvoiceDollar className="text-white text-lg" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">Tax Status</p>
+              <div className="flex items-center gap-2">
+                {isTaxValid ? (
+                  <FaCircleCheck className="text-green-600" />
+                ) : motInfo?.IsVehicleSORN ? (
+                  <FaTriangleExclamation className="text-yellow-600" />
+                ) : (
+                  <FaCircleXmark className="text-red-600" />
+                )}
+                <span className={`font-bold ${
+                  isTaxValid ? 'text-green-700' : motInfo?.IsVehicleSORN ? 'text-yellow-700' : 'text-red-700'
+                }`}>
+                  {taxInfo?.TaxStatus || (motInfo?.IsVehicleSORN ? 'SORN' : 'Untaxed')}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="text-sm text-gray-600">
+            <span className="font-medium">Due Date:</span>{' '}
+            <span className="font-semibold text-gray-900">{motInfo?.DateRoadTaxDue || 'Not Available'}</span>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Complete Vehicle Details Table */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.4 }}
+        className="bg-white rounded-xl border border-gray-200 overflow-hidden"
+      >
+        <div className="bg-gray-50 px-5 py-3 border-b border-gray-200">
+          <h4 className="font-bold text-gray-900 flex items-center gap-2">
+            <FaCar className="text-blue-600" />
+            Complete Vehicle Details
+          </h4>
+        </div>
+        <div className="divide-y divide-gray-100">
+          {vehicleDetails.map((item, index) => (
+            <div
+              key={item.label}
+              className={`flex justify-between items-center px-5 py-3 ${
+                index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+              } hover:bg-blue-50/50 transition-colors`}
+            >
+              <span className="text-sm text-gray-600">{item.label}</span>
+              <span className="text-sm font-semibold text-gray-900">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 }
